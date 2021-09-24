@@ -1,2 +1,4 @@
-# URL-Shortener
-URL-Shortner API using MERN stack
+# FleetingLinks
+Your one stop shop for shortining links.
+Use custom Aliases and Keep them for 30 days!
+
