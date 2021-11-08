@@ -1,139 +1,118 @@
-import * as React from 'react';
-import axios from "axios"; 
-import Button from '@mui/material/Button';
-import Box from '@mui/material/Box'
-import { Container, CssBaseline, TextField, Link, Typography, Collapse, Alert, IconButton } from '@mui/material';
-
+import * as React from "react";
+import styles from "../components/create.module.css";
+import axios from "axios";
+import logo from "../Logo.svg";
 
 const api = axios.create({
-    baseURL: 'http://localhost:5000/api/url/shorten'
-})
-
-function Copyright(props) {
-    return (
-      <Typography variant="body2" color="text.secondary" align="center" {...props}>
-        {'Copyright © '}
-        <Link color="inherit" href="http://localhost:3000/">
-          FleetingLink
-        </Link>{' '}
-        {new Date().getFullYear()}
-        {'.'}
-      </Typography>
-    );
-  }
-
+    baseURL: "http://localhost:5000/api/url/shorten",
+});
 
 class Create extends React.Component {
-    state = {
-        longUrl: '',
-        shortUrl: '',
-        urlCode: '',
-        err: false,
-        errMessage: ''
+    constructor(props) {
+        super(props);
+        this.state = {
+            longUrl: "",
+            shortUrl: "",
+            urlCode: "",
+            err: false,
+            errMessage: "",
+        };
+
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    handleChange = (event) => {
+        const target = event.target;
+        const longUrl = target.longUrl;
+        const urlCode = target.urlCode;
+
+        this.setState({
+            longUrl: longUrl,
+            urlCode: urlCode,
+        });
     };
 
-    /* This is where the magic happens 
-    */
-    handleSubmit = async event => {
+    /* This is where the magic happens
+     */
+    handleSubmit = async (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        await api.post('/', { longUrl: data.get('longUrl'), urlCode: data.get('urlCode') })
-        .then(res=>{
-            if(res.data.shortUrl == null) {
-                this.setState({ shortUrl: 'Error' })
-                console.log(this.state.shortUrl)
-            }
-            else {
-                this.setState({ shortUrl: res.data.shortUrl })
-                console.log(this.state.shortUrl)
-            }
-            this.setState.longUrl = '';
-        })
-        .catch(error => { 
-            console.error(error);
-            this.setState({ err: true });
-            this.setState({ errorMessage: error.message });
-        });
-    }
-
-    handleChange = event =>{
-        this.setState({ longUrl: event.target.value});
-    }
+        await api
+            .post("/", {
+                longUrl: data.get("longUrl"),
+                urlCode: data.get("urlCode"),
+            })
+            .then((res) => {
+                if (res.data.shortUrl == null) {
+                    this.setState({ shortUrl: "Error" });
+                    console.log(this.state.shortUrl);
+                } else {
+                    this.setState({ shortUrl: res.data.shortUrl });
+                    console.log(this.state.shortUrl);
+                }
+                this.setState.longUrl = "";
+            })
+            .catch((error) => {
+                console.error(error);
+                this.setState({ err: true });
+                this.setState({ errorMessage: error.message });
+            });
+    };
 
     render() {
         return (
-            <Container component="main" maxWidth="md">
-                <CssBaseline />
-                <Collapse in={ this.state.err }>
-                    <Alert
-                    action={
-                        <IconButton
-                        aria-label="close"
-                        color="inherit"
-                        size="small"
-                        onClick={() => {
-                            this.setState({ err: false });
-                        }}
-                        >
-                        X
-                        </IconButton>
-                    }
-                    sx={{ mb: 2 }}
-                    severity="error"
-                    >
-                    {this.state.errorMessage}
-                    </Alert>
-                </Collapse>
-                <Box
-                    sx = {{
-                        marginTop: 8, 
-                        display: 'flex',
-                        flexDirection: 'column',
-                    }} 
-                    textAlign='center'
-                    >
-
-                    <Typography variant="h1" align="center">
-                        FleetingLink
-                    </Typography>
-
-                    <Box component="form" onSubmit={this.handleSubmit} noValidate sx={{ mt: 1 }}>
-                        <TextField 
-                            margin="normal"
-                            required
-                            fullWidth
-                            id="longUrl"
-                            label="Your Long URL"
-                            name="longUrl"
-                            autoFocus
-                        />
-                        <TextField 
-                            margin="normal"
-                            fullWidth
-                            id="urlCode"
-                            label="Your Custom Slug"
-                            name="urlCode"
-                        />
-                        <Button
+            <div className={styles.container}>
+                <a href="http://fleetinglink.com/">
+                    <img className={styles.logo} src={logo} alt="Logo"></img>
+                </a>
+                <div className={styles.navigation}>
+                    <ul>
+                        <li>Usage</li>
+                        <li>About</li>
+                        <li>Contact</li>
+                    </ul>
+                </div>
+                <div className={styles.text}>Temporary and memorable links</div>
+                <div className={styles.borderBox} />
+                <div className={styles.cardBehind} />
+                <div className={styles.card}>
+                    <form onSubmit={this.handleSubmit}>
+                        <div className={styles.formGroup}>
+                            <label>
+                                PASTE LINK:
+                                <input
+                                    name="longUrl"
+                                    type="text"
+                                    value={this.state.longUrl}
+                                    onChange={this.handleChange}
+                                    placeholder="www.url.com"
+                                />
+                            </label>
+                            <br />
+                            <label>
+                                ENTER ALIAS:
+                                <input
+                                    name="urlCode"
+                                    type="text"
+                                    value={this.state.urlCode}
+                                    onChange={this.handleChange}
+                                    placeholder="alias"
+                                />
+                            </label>
+                            <br />
+                        </div>
+                        <input
+                            className={styles.submit}
                             type="submit"
-                            fullwidth
-                            variant="contained"
-                            sx = {{ mt: 2, mb: 2}}
-                        > Submit </Button>
-                    </Box>
-
-                <Typography variant="h5" align="center" sx ={{ mt: 4 }}>
-                    New Link:
-                </Typography>
-
-                <Link color="inherit" href={this.state.shortUrl}>
-                    {this.state.shortUrl}
-                </Link>
-
-                </Box>
-                <Copyright sx={{ mt: 8, mb: 4 }} />
-            </Container>
+                            value="Genrate Link"
+                        />
+                    </form>
+                </div>
+                <div className={styles.backgroundTexture} />
+            </div>
         );
     }
 }
+
 export default Create;

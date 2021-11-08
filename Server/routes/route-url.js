@@ -47,14 +47,14 @@ router.post('/shorten', async (req, res) => {
                 code,
                 longUrl,
                 shortUrl,
-                date: new Date()
+                createdAt: new Date()
             });
 
             await url.save();
 
             return res.json(url);
         } catch (err) {
-            return res.status(500).json('Server Error Generating');
+            return res.status(500).json(err);
         }
     } else {
         return res.status(401).json('Invalid long url');
